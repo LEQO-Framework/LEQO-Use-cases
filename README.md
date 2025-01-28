@@ -2,8 +2,8 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This project contains different use cases for the SeQuenC-platform.
-The main purpose is to show how the different components used in the SeQuenC-project interact with the unification-layer.
+This project contains different use cases for the LEQO-platform.
+The main purpose is to show how the different components used in the LEQO-project interact with the unification-layer.
 Every Use-case is identified with a name, the purpose or a location and the year of creation.
 
 More tools used for the use-cases are the following:
@@ -24,7 +24,7 @@ The use-case shows the BloqCat framework which is used to create an executable s
 ### Repository structure
 
 ```
-SEQUENC-USECASES
+LEQO-USECASES
 │   README.md
 │
 └───USE-CASE
