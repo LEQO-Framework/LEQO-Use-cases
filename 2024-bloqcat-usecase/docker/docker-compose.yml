@@ -7,6 +7,7 @@ volumes:
 
 services:
   # LEQO Framework API
+  # This one should be the image created by the workflow on the bloqcat repo
   leqo-api:
     image: leqo/framework-api:latest
     ports:
@@ -15,6 +16,7 @@ services:
       - leqo-network
 
   # LEQO Model Repository (Winery Replacement)
+  # in the bloqcat-modeling worklfow
   leqo-model-repo:
     image: leqo/model-repo:latest
     environment:
@@ -26,6 +28,7 @@ services:
       - leqo-network
 
   # LEQO Database (Postgres Replacement for QC-Atlas and Pattern Atlas)
+  # Need to be created locally everytime so no workflow needed
   leqo-db:
     image: leqo/database:latest
     environment:
@@ -39,6 +42,7 @@ services:
       - leqo-network
 
   # LEQO UI
+  # created in qc-atlas-ui workflow
   leqo-ui:
     image: leqo/framework-ui:latest
     depends_on:
@@ -52,6 +56,7 @@ services:
       - leqo-network
 
   # LEQO Authentication (Keycloak Replacement)
+  # NOT change
   leqo-auth:
     image: leqo/auth-service:latest
     environment:
@@ -63,6 +68,7 @@ services:
       - leqo-network
 
   # LEQO Config Server (ETCD Replacement)
+  # NOT replace this one. This is needed as the config server and should be the q...
   leqo-config-server:
     image: leqo/config-server:latest
     environment:
@@ -75,6 +81,7 @@ services:
       - leqo-network
 
   # LEQO Qunicorn Server (Quantum Job Handler)
+  # You dont need that
   leqo-qunicorn:
     image: leqo/qunicorn:latest
     environment:
@@ -93,6 +100,7 @@ services:
       - leqo-network
 
   # LEQO Worker (Job Processor)
+  # You dont need that
   leqo-worker:
     image: leqo/worker:latest
     environment:
@@ -108,6 +116,7 @@ services:
       - leqo-network
 
   # LEQO Message Broker (Redis Replacement)
+  # You dont need that
   leqo-broker:
     image: leqo/broker:latest
     ports:
@@ -116,6 +125,7 @@ services:
       - leqo-network
 
   # LEQO Renderer (LaTeX Service Replacement)
+  # Dont think you need to change that (from the original one)
   leqo-renderer:
     image: leqo/renderer:latest
     ports:
