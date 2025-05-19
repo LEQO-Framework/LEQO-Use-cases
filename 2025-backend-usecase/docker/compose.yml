@@ -1,0 +1,11 @@
+name: lowcode-platform
+services:
+  backend:
+    image: ghcr.io/leqo-framework/low-backend:main
+    ports:
+      - 127.0.0.1:8000:80
+
+  frontend:
+    image: ghcr.io/leqo-framework/low-code-modeler:main
+    ports:
+      - 127.0.0.1:80:4242 # 4242 is the port of the vite dev server
