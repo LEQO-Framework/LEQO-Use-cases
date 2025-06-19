@@ -4,54 +4,101 @@ Simple helper script to insert enrichments into the database.
 """
 
 import argparse
-import sys
+import json
 from pathlib import Path
-from urllib import error, request
+from time import sleep
+from urllib import request
 
 SUCCESS_CODE = 200
+POLL_INTERVAL = 0.1
+MAX_ATTEMPTS = 5
+SIMPLE_ENDPOINTS = ("/insert", "/debug/compile", "/debug/enrich")
+POLLING_ENDPOINTS = ("/compile", "/enrich")
 
 
-def send_json(json_path: Path, endpoint: str) -> bool:
-    try:
-        with json_path.open() as f:
-            data = f.read().encode("utf-8")
-
-        req = request.Request(
+def simple_send_json(json_path: Path, endpoint: str) -> None:
+    with json_path.open() as f:
+        data = f.read().encode("utf-8")
+    with request.urlopen(
+        request.Request(
             endpoint,
             data=data,
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with request.urlopen(req) as response:
-            status: int = response.status
-            print(f"""\
+    ) as response:
+        print(f"""\
 Request successful,
-status code: {status}
+status code: {response.status}
 
 {response.read().decode("utf-8")}
-                  """)
-            return status == SUCCESS_CODE
-    except error.HTTPError as e:
-        print(f"HTTP error: {e.code} - {e.reason}")
-    except error.URLError as e:
-        print(f"URL error: {e.reason}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-    return False
+              """)
+
+
+def polling_send_json(json_path: Path, host: str, endpoint: str) -> None:
+    with json_path.open() as f:
+        data = f.read().encode("utf-8")
+
+    with request.urlopen(
+        request.Request(
+            host + endpoint,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+    ) as response:
+        assert response.status == SUCCESS_CODE, (
+            f"First response failed with {response.status} {response.read().encode('utf-8')}"
+        )
+        uuid = json.loads(response.read().decode("utf-8"))["uuid"]
+
+    done = False
+    for _ in range(MAX_ATTEMPTS):
+        with request.urlopen(
+            request.Request(host + f"/status/{uuid}", method="GET")
+        ) as response:
+            assert response.status == SUCCESS_CODE, (
+                f"Status endpoint failed with {response.status} {response.read().encode('utf-8')}"
+            )
+            if json.loads(response.read().decode("utf-8"))["status"] == "completed":
+                done = True
+                break
+        sleep(POLL_INTERVAL)
+    assert done, f"No success after {MAX_ATTEMPTS * POLL_INTERVAL}s"
+
+    with request.urlopen(
+        request.Request(host + f"/result/{uuid}", method="GET")
+    ) as response:
+        print(f"""\
+Request successful,
+status code: {response.status}
+
+{response.read().decode("utf-8")}
+              """)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Send JSON via POST to an endpoint.")
     parser.add_argument("json_file", help="Path to the JSON file to send")
     parser.add_argument(
-        "--endpoint",
-        default="http://localhost:8000/insert",
-        help="Endpoint URL (default: http://localhost:8000/insert)",
+        "--host",
+        default="http://localhost:8000",
+        help="Host URL (default: http://localhost:8000)",
+    )
+    parser.add_argument(
+        "--endpoint", default="/insert", help="Endpoint (default: /insert)"
     )
     args = parser.parse_args()
 
-    success = send_json(Path(args.json_file), args.endpoint)
-    sys.exit(0 if success else 1)
+    assert args.endpoint in (*SIMPLE_ENDPOINTS, *POLLING_ENDPOINTS), (
+        f"Invalid endpoint: {args.endpoint}"
+    )
+
+    json_file = Path(args.json_file)
+    if args.endpoint in SIMPLE_ENDPOINTS:
+        simple_send_json(json_file, args.host + args.endpoint)
+    else:
+        polling_send_json(json_file, args.host, args.endpoint)
 
 
 if __name__ == "__main__":
