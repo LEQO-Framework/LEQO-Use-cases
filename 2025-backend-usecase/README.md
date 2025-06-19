@@ -57,7 +57,7 @@ python3 ./request_helper.py ./addition_insert.json
 #### Use curl
 
 ```sh
-curl -X POST -H "Content-Type: application/json" --data @./addition_insert.json http://localhost:8000/insert
+curl -H "Content-Type: application/json" --data @./addition_insert.json http://localhost:8000/insert
 ```
 
 > [!TIP]
@@ -128,13 +128,15 @@ You can use one of the following options:
 #### Use Python
 
 ```sh
-python3 ./request_helper.py compile_request_with_addition.json --endpoint http://localhost:8000/debug/compile
+python3 ./request_helper.py compile_request_with_addition.json --endpoint /compile
 ```
 
-#### Use curl
+#### Use curl and jq
 
 ```sh
-curl -X POST -H "Content-Type: application/json" --data @./compile_request_with_addition.json http://localhost:8000/debug/compile
+UUID=$(curl -L -H "Content-Type: application/json" --data @./compile_request_with_addition.json http://localhost:8000/compile | jq -r '.uuid') \
+&& for i in $(seq 1 10); do if [ "$(curl -s "http://localhost:8000/status/$UUID" | jq -r '.status')" = "completed" ]; then break; else sleep 0.5; fi; done \
+&& curl "http://localhost:8000/result/$UUID"
 ```
 
 ### Send Compile Request with Database Retrieval
@@ -145,13 +147,15 @@ You can use one of the following options:
 #### Use Python
 
 ```sh
-python3 ./request_helper.py compile_request_without_addition.json --endpoint http://localhost:8000/debug/compile
+python3 ./request_helper.py compile_request_without_addition.json --endpoint /compile
 ```
 
-#### Use curl
+#### Use curl and jq
 
 ```sh
-curl -X POST -H "Content-Type: application/json" --data @./compile_request_without_addition.json http://localhost:8000/debug/compile
+UUID=$(curl -L -H "Content-Type: application/json" --data @./compile_request_without_addition.json http://localhost:8000/compile | jq -r '.uuid') \
+&& for i in $(seq 1 10); do if [ "$(curl -s "http://localhost:8000/status/$UUID" | jq -r '.status')" = "completed" ]; then break; else sleep 0.5; fi; done \
+&& curl "http://localhost:8000/result/$UUID"
 ```
 
 ## 4. Analyse the Result
