@@ -7,15 +7,16 @@
 
 - [Install Docker](https://docs.docker.com/install/)
 - [Install Docker Compose](https://docs.docker.com/compose/install/)
+- [Clone this repository](https://github.com/LEQO-Framework/LEQO-Use-cases)
+- (Optional) [Install Python](https://www.python.org/downloads/)
+- (Optional) [Install curl](https://curl.se/download.html)
 
 ## 0. Service Setup
 
 ### Docker Setup
 
-In the [./docker](docker) directory you will find a simple docker compose file to spin up the whole project.
-
-Create a new directory on your system and download the [docker-compose.yml](docker/docker-compose.yml) into that folder.
-Then run the following command inside the folder:
+Navigate to the [./docker/](./docker/) directory.
+Then run the following command:
 
 ```sh
 docker compose up -d
@@ -35,88 +36,205 @@ docker compose up -d
 
 You need to configure the path to the backend in the frontend UI.
 
-1. Open the frontend
+1. Open the frontend in a web browser: [http://localhost](http://localhost)
 1. Click on **Configuration**
 1. Insert `http://localhost:8000` into the "Low-Code Backend Endpoint" field
 1. Click on **Save**
 
-## 1. Model a simple Quantum Algorithm
+### (Optional) Insert Implementations into the Backend
 
-For demonstration purpose we will model a simple addition algorithm that uses qubits to add to integers.
+If you don't want to insert the implementation for the addition later in the frontend, you need to add it to the database.
 
-1. Start by dragging two "int" nodes from the palette on the left of the screen.
-1. Each integer should be connected to an "Encode Value" node.
-1. The resulting qubits from the encoding will both be connected to an "Arithmetic Operator" node.
-1. We can the measure the result of the addition with a "Measurement" node.
+Navigate to the [./resources/scripts/](./resources/scripts/) directory.
+Now you have to options:
 
-The final graph should look like this:
+#### Use Python
 
-![Addition UseCase](./docs/graphics/addition.png)
-
-## 2. Specify implementations
-
-The backend is capable of providing implementations for simple nodes like "int" and "measure" but does not know how to generate advanced implementations like an encoding or addition.
-
-In production these implementations will be ready from a database.
-To simplify things for testing, we will simply manually provide an implementation for these three nodes:
-
-### Encoding Nodes
-
-```
-OPENQASM 3.0;
-include "stdgates.inc";
-
-@leqo.input 0
-int[32] val;
-
-qubit[3] q;
-x q[0];
-
-@leqo.output 0
-let out = q;
+```sh
+python3 ./request_helper.py ./addition_insert.json
 ```
 
-### Arithmetic Operator
+#### Use curl
 
+```sh
+curl -X POST -H "Content-Type: application/json" --data @./addition_insert.json http://localhost:8000/insert
 ```
-OPENQASM 3.0;
-include "stdgates.inc";
 
-@leqo.input 0
-qubit[3] q31;
+---
 
-@leqo.input 1
-qubit[3] q32;
-
-qubit[2] q33;ccx q31[1], q32[1], q32[2];
-cx q31[1], q32[1];
-ccx q31[0], q32[0], q33[1];
-cx q31[0], q32[0];
-ccx q33[0], q32[0], q33[1];
-ccx q33[1], q32[1], q32[2];
-cx q33[1], q32[1];
-ccx q33[0], q32[0], q33[1];
-cx q31[0], q32[0];
-ccx q31[0], q32[0], q33[1];
-cx q33[0], q32[0];
-cx q31[0], q32[0];
-
-@leqo.output 0
-let out = q32;
-```
+Both options have equivalent semantic, just use what is more convenient for you.
+Or skip this step entirely and hardcode the implementation later in the frontend.
 
 > [!TIP]
-> Detailed explanation on the `@leqo.*` annotations can be found in the [backend documentation](https://leqo-framework.github.io/leqo-backend/usage/annotations.html#annotations).
+> Detailed explanation on the `@leqo.*` annotations used in that implementation can be found in the [backend documentation](https://leqo-framework.github.io/leqo-backend/usage/annotations.html#annotations).
 
-## 3. Specify parameters
+## 1. Test the Backend via the Frontend
 
-Let's specify the values of the two integers we want to add and select which qubits to measure.
+### Build the Model
 
-## 4. Generate final program
+We will now model this simple algorithm in the frontend:
 
-Now, all that's left to do is to generate actual `OPENQasm 3` code we can execute on some quantum computer.
+![model in frontend](./resources/graphics/modeled_graph.png)
 
-To do so, simply click "Send to Backend".
+> [!TIP]
+> You can use the stored [frontend model](./resources/scripts/frontend_model.json) to load the model directly.
+
+Here is a small textual description on how to build it:
+
+1. Drag five _|1⟩_ nodes (under **Circuit-level Nodes**) into the graph
+1. Drag two _H_ nodes (under **Circuit-level Nodes**) into the graph
+1. Drag two _Merger_ nodes (under **Circuit-level Nodes**) into the graph
+    - Click on the _Merger_ node
+    - Insert into **Number of Inputs**: 2 for the upper merger, 3 for the lower
+1. Drag one _Arithmetic Operator_ node (under **Operators**) into the graph
+    - If you have not inserted the implementation for this node as described [here](<###-(Optional)-Insert-Implementations-into-the-Backend>), you need to insert it
+    - Click on the _Arithmetic Operator_ node
+    - Insert the content of [addition_impl.txt](./resources/scripts/addition_impl.txt) into the **implementation Content** field
+1. Drag one _Measurement_ node (under **Boundary Nodes**) into the graph
+    - Click on the _Measurement_ node
+    - Insert into **Indicies**: 2
+1. Connect the nodes as can be seen in the image:
+    - Two qubits (_|1⟩_) into the upper merger
+    - The output of this merger into one Hadamard (_H_) gate
+    - The output of this gate into the upper entry of the _Arithmetic Operator_
+    - One of the lower qubits into the second Hadamard (_H_) gate
+    - The Hadamard output and the reaming qubits into the lower merger
+    - The output of the merger into the second entry of the _Arithmetic Operator_
+    - The output of the _Arithmetic Operator_ into the _Measurement_
+
+### See the Result
+
+The frontend is unable to display the result yet.
+However, we can see it via the DevTools of our web browser (the pictures are Firefox)
+
+1. Open the DevTools
+1. Navigate to the **Network** tab
+1. Press on **Send to Backend** in the frontend
+1. You should now see a successful request in the **Network** tab:
+   ![result in dev-tools](./resources/graphics/result_in_dev_tools.png)
+1. Clicking on it should open the result in another tab
+
+## 2. Test the Backend via Terminal
+
+The backend can also be accessed directly using python or curl.
+The sections below use stored a compile_request with the same semantic as the model in the [frontend section](##-1.-Test-the-Backend-via-the-Frontend) had.
+
+### Send Compile Request with Hardcoded Addition implementation
+
+This variation works without the insert described [here](<###-(Optional)-Insert-Implementations-into-the-Backend>).
+You can use one of the following options:
+
+#### Use Python
+
+```sh
+python3 ./request_helper.py compile_request_with_addition.json --endpoint http://localhost:8000/debug/compile
+```
+
+#### Use curl
+
+```sh
+curl -X POST -H "Content-Type: application/json" --data @./compile_request_with_addition.json http://localhost:8000/debug/compile
+```
+
+### Send Compile Request with Database Retrieval
+
+This variation requires that you have done the preparation described [here](<###-(Optional)-Insert-Implementations-into-the-Backend>).
+You can use one of the following options:
+
+#### Use Python
+
+```sh
+python3 ./request_helper.py compile_request_without_addition.json --endpoint http://localhost:8000/debug/compile
+```
+
+#### Use curl
+
+```sh
+curl -X POST -H "Content-Type: application/json" --data @./compile_request_without_addition.json http://localhost:8000/debug/compile
+```
+
+## 3. Analyse the Result
+
+All the methods described above should give you the same result matching [./resources/scripts/compile_result.qasm](./resources/scripts/compile_result.qasm).
 
 > [!WARNING]
-> Currently the implementation will only be visible in the DevTools of the frontend!
+> Building the model yourself will result in different node ids in the frontend and therefore in a different output!
+
+The following backend behaivor can be observed on by example:
+
+### All Qubit Declarations to the Top
+
+The backend declares all qubits using one big qubit register at the top of the program.
+
+```
+OPENQASM 3.1;
+include "stdgates.inc";
+qubit[8] leqo_reg;
+...
+```
+
+### Renaming
+
+All identifier where prefixed with a hash corresponding to one frontend node.
+
+```
+...
+/* Start node d703bb61-3410-43ce-be51-4750fb7b9f0f */
+let leqo_b8d0652a44085419a43031521aab072e_literal = leqo_reg[{0}];
+@leqo.output 0
+let leqo_b8d0652a44085419a43031521aab072e_out = leqo_b8d0652a44085419a43031521aab072e_literal;
+/* End node d703bb61-3410-43ce-be51-4750fb7b9f0f */
+/* Start node 5b427a52-047a-4cbc-b4f4-6705a2b4b0bb */
+let leqo_b7e9559cda9e59e2ae8e5e0b5a9689b0_literal = leqo_reg[{1}];
+@leqo.output 0
+let leqo_b7e9559cda9e59e2ae8e5e0b5a9689b0_out = leqo_b7e9559cda9e59e2ae8e5e0b5a9689b0_literal;
+/* End node 5b427a52-047a-4cbc-b4f4-6705a2b4b0bb */
+...
+```
+
+### Automated Node Generation
+
+The _Merger_ nodes are auto generated matching their input.
+
+```
+...
+/* Start node 185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62 */
+@leqo.input 0
+let leqo_361ab059e1005696a32d68dfa1946b38_merger_input_0 = leqo_reg[{1}];
+@leqo.input 1
+let leqo_361ab059e1005696a32d68dfa1946b38_merger_input_1 = leqo_reg[{0}];
+@leqo.output 0
+let leqo_361ab059e1005696a32d68dfa1946b38_merger_output = leqo_361ab059e1005696a32d68dfa1946b38_merger_input_0 ++ leqo_361ab059e1005696a32d68dfa1946b38_merger_input_1;
+/* End node 185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62 */
+...
+```
+
+Furthermore, the _|1⟩_, _H_ and _Measurement_ nodes are also auto generated.
+
+### Size Cast
+
+The inputs into the _Arithmetic Operator_ node are to small for it, the backend casts them up to make them fit.
+
+```
+...
+/* Start node 6ca13c69-36cf-4771-b8c4-0f5804cc7d6e */
+@leqo.input 0
+let leqo_b8f3c6982d375661bb24e30358b24281_q34 = leqo_reg[{1, 0}];
+let leqo_b8f3c6982d375661bb24e30358b24281_q35 = leqo_reg[{7}];
+let leqo_b8f3c6982d375661bb24e30358b24281_q31 = leqo_b8f3c6982d375661bb24e30358b24281_q34 ++ leqo_b8f3c6982d375661bb24e30358b24281_q35;
+@leqo.input 1
+let leqo_b8f3c6982d375661bb24e30358b24281_q32 = leqo_reg[{4, 3, 2}];
+let leqo_b8f3c6982d375661bb24e30358b24281_q33 = leqo_reg[{5, 6}];
+...
+```
+
+### Deterministic Output
+
+Sending the compile request multiple times yields the same result.
+
+### More Features not visible in this Example
+
+- Optimization via ancilla reusage
+- Inlining of constants
+- Convert from OpenQASM 2 to OpenQASM 3
+- Nested nodes like If-Then-Else and Repeat
