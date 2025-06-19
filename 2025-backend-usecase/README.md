@@ -5,26 +5,42 @@
 
 ## Prerequisites
 
-- Install [docker](https://docs.docker.com/get-started/get-docker/)
+- [Install Docker](https://docs.docker.com/install/)
+- [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-## 0. Start services
+## 0. Service Setup
 
-In the [./docker](docker/compose.yml) directory you will find a very simple docker compose file to spin up the whole project.
+### Docker Setup
 
-Simply create a new directory on your system and download the [compose.yml](docker/compose.yml) into the new folder.
-Then you can simply run the following command.
+In the [./docker](docker) directory you will find a simple docker compose file to spin up the whole project.
+
+Create a new directory on your system and download the [docker-compose.yml](docker/docker-compose.yml) into that folder.
+Then run the following command inside the folder:
 
 ```sh
 docker compose up -d
 ```
 
 > [!NOTE]
+> The `-d` flag is **optional**.
+> It runs the containers in the background (detached mode) and keeps them running even after the command execution is complete.
+
+> [!WARNING]
 > If you are using docker desktop, ensure it's running
 
-> [!NOTE]
+> [!WARNING]
 > On linux you will likely have to use `sudo` to communicate with the docker socket.
 
-## 1. Model a simple quantum algorithm
+### Configure the Frontend
+
+You need to configure the path to the backend in the frontend UI.
+
+1. Open the frontend
+1. Click on **Configuration**
+1. Insert `http://localhost:8000` into the "Low-Code Backend Endpoint" field
+1. Click on **Save**
+
+## 1. Model a simple Quantum Algorithm
 
 For demonstration purpose we will model a simple addition algorithm that uses qubits to add to integers.
 
