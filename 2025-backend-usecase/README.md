@@ -209,7 +209,7 @@ Furthermore, the _|0⟩_, _H_ and _Measurement_ nodes are also auto generated.
 
 ### Size Cast
 
-The first input into the _Arithmetic Operator_ node is to small, the backend casts them up to make them fit.
+The first input into the _Arithmetic Operator_ node is too small, the backend casts them up to make them fit.
 
 ```qasm
 /* Start node 6ca13c69-36cf-4771-b8c4-0f5804cc7d6e */
@@ -219,7 +219,7 @@ let leqo_b8f3c6982d375661bb24e30358b24281_q35 = leqo_reg[{7}];
 let leqo_b8f3c6982d375661bb24e30358b24281_q31 = leqo_b8f3c6982d375661bb24e30358b24281_q34 ++ leqo_b8f3c6982d375661bb24e30358b24281_q35;
 ```
 
-This is done by creating an ancilla register below the input and map the used identifier to the concatenation of the input with the ancilla register.
+This is done by defining a register of ancillae below the input and map the used identifier to the concatenation of the input with the ancilla register.
 
 ### Deterministic Output
 
