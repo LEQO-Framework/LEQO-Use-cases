@@ -227,6 +227,36 @@ let leqo_b8f3c6982d375661bb24e30358b24281_q33 = leqo_reg[{5, 6}];
 
 Sending the compile request multiple times yields the same result.
 
+### Compatible with Qiskit
+
+The resulting OpenQASM is compatible with Qiskit, giving following result:
+
+```
+                                                ┌───┐                                                               
+                                    leqo_reg_0: ┤ H ├──■─────────■──────────────────────────────────────────────────
+                                                ├───┤  │         │                                                  
+                                    leqo_reg_1: ┤ H ├──┼────■────┼────■───────────────────────────■────■─────────■──
+                                                └───┘┌─┴─┐  │    │    │       ┌───┐     ┌─┐       │    │         │  
+                                    leqo_reg_2: ─────┤ X ├──┼────┼────┼───────┤ X ├─────┤M├───────┼────┼─────────┼──
+                                                     └─┬─┘  │  ┌─┴─┐  │       └─┬─┘┌───┐└╥┘       │    │         │  
+                                    leqo_reg_3: ───────■────┼──┤ X ├──┼─────────■──┤ X ├─╫────────┼────┼─────────┼──
+                                                ┌───┐       │  └───┘┌─┴─┐       │  └─┬─┘ ║      ┌─┴─┐  │  ┌───┐┌─┴─┐
+                                    leqo_reg_4: ┤ X ├───────■───────┤ X ├──■────┼────┼───╫───■──┤ X ├──■──┤ X ├┤ X ├
+                                                └───┘       │       └───┘  │    │    │   ║   │  └───┘  │  └─┬─┘└───┘
+                                    leqo_reg_5: ────────────┼──────────────■────┼────┼───╫───■─────────┼────■───────
+                                                          ┌─┴─┐          ┌─┴─┐  │    │   ║ ┌─┴─┐     ┌─┴─┐          
+                                    leqo_reg_6: ──────────┤ X ├──────────┤ X ├──■────■───╫─┤ X ├─────┤ X ├──────────
+                                                          └───┘          └───┘           ║ └───┘     └───┘          
+                                    leqo_reg_7: ─────────────────────────────────────────╫──────────────────────────
+                                                                                         ║                          
+leqo_9f567c19326f57288f0bd799e35e705b_result: 1/═════════════════════════════════════════╩══════════════════════════
+                                                                                         0                          
+```
+
+> [!NOTE]
+> This picture was produced with [compile_result_with_qiskit.py](./resources/scripts/compile_result_with_qiskit.py).
+> But it requires a local Qiskit installation.
+
 ### More Features not visible in this Example
 
 - Optimization via ancilla reusage
