@@ -43,7 +43,7 @@ You need to configure the path to the backend in the frontend UI.
 
 ### (Optional) Insert Implementations into the Backend
 
-If you don't want to insert the implementation for the addition later in the frontend, you need to add it to the database.
+If you want to load the implementation for the addition later via the database, you need to add it now.
 
 Navigate to the [./resources/scripts/](./resources/scripts/) directory.
 Now you have to options:
@@ -63,7 +63,6 @@ curl -X POST -H "Content-Type: application/json" --data @./addition_insert.json 
 ---
 
 Both options have equivalent semantic, just use what is more convenient for you.
-Or skip this step entirely and hardcode the implementation later in the frontend.
 
 > [!TIP]
 > Detailed explanation on the `@leqo.*` annotations used in that implementation can be found in the [backend documentation](https://leqo-framework.github.io/leqo-backend/usage/annotations.html#annotations).
@@ -94,10 +93,10 @@ Here is a small textual description on how to build it:
     - Click on the _Measurement_ node
     - Insert into **Indicies**: 2
 1. Connect the nodes as can be seen in the image:
-    - Two qubits (_|1⟩_) into the upper merger
-    - The output of this merger into one Hadamard (_H_) gate
+    - Two qubits _|1⟩_ into the upper merger
+    - The output of this merger into one Hadamard _H_ gate
     - The output of this gate into the upper entry of the _Arithmetic Operator_
-    - One of the lower qubits into the second Hadamard (_H_) gate
+    - One of the lower qubits into the second Hadamard _H_ gate
     - The Hadamard output and the reaming qubits into the lower merger
     - The output of the merger into the second entry of the _Arithmetic Operator_
     - The output of the _Arithmetic Operator_ into the _Measurement_
@@ -105,7 +104,7 @@ Here is a small textual description on how to build it:
 ### See the Result
 
 The frontend is unable to display the result yet.
-However, we can see it via the DevTools of our web browser (the pictures are Firefox)
+However, we can see it via the DevTools of our web browser
 
 1. Open the DevTools
 1. Navigate to the **Network** tab
@@ -118,6 +117,9 @@ However, we can see it via the DevTools of our web browser (the pictures are Fir
 
 The backend can also be accessed directly using python or curl.
 The sections below use stored a compile_request with the same semantic as the model in the [frontend section](##-1.-Test-the-Backend-via-the-Frontend) had.
+
+> [!NOTE]
+> All command in this section assume that you are in the [./resources/scripts/](./resources/scripts/) directory.
 
 ### Send Compile Request with Hardcoded Addition implementation
 
@@ -138,7 +140,7 @@ curl -X POST -H "Content-Type: application/json" --data @./compile_request_with_
 
 ### Send Compile Request with Database Retrieval
 
-This variation requires that you have done the preparation described [here](<###-(Optional)-Insert-Implementations-into-the-Backend>).
+This variation uses the implementation from the database, assuming you inserted it [here](<###-(Optional)-Insert-Implementations-into-the-Backend>).
 You can use one of the following options:
 
 #### Use Python
@@ -160,7 +162,7 @@ All the methods described above should give you the same result matching [./reso
 > [!WARNING]
 > Building the model yourself will result in different node ids in the frontend and therefore in a different output!
 
-The following backend behaivor can be observed on by example:
+The following backend behavior can be observed on by this example:
 
 ### All Qubit Declarations to the Top
 
