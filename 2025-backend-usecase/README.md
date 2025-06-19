@@ -11,7 +11,7 @@
 - (Optional) [Install Python](https://www.python.org/downloads/)
 - (Optional) [Install curl](https://curl.se/download.html)
 
-## 0. Service Setup
+## 1. Service Setup
 
 ### Docker Setup
 
@@ -67,7 +67,7 @@ Both options have equivalent semantic, just use what is more convenient for you.
 > [!TIP]
 > Detailed explanation on the `@leqo.*` annotations used in that implementation can be found in the [backend documentation](https://leqo-framework.github.io/leqo-backend/usage/annotations.html#annotations).
 
-## 1. Test the Backend via the Frontend
+## 2. Test the Backend via the Frontend
 
 ### Build the Model
 
@@ -113,7 +113,7 @@ However, we can see it via the DevTools of our web browser
    ![result in dev-tools](./resources/graphics/result_in_dev_tools.png)
 1. Clicking on it should open the result in another tab
 
-## 2. Test the Backend via Terminal
+## 3. Test the Backend via Terminal
 
 The backend can also be accessed directly using python or curl.
 The sections below use stored a compile_request with the same semantic as the model in the [frontend section](##-1.-Test-the-Backend-via-the-Frontend) had.
@@ -155,7 +155,7 @@ python3 ./request_helper.py compile_request_without_addition.json --endpoint htt
 curl -X POST -H "Content-Type: application/json" --data @./compile_request_without_addition.json http://localhost:8000/debug/compile
 ```
 
-## 3. Analyse the Result
+## 4. Analyse the Result
 
 All the methods described above should give you the same result matching [./resources/scripts/compile_result.qasm](./resources/scripts/compile_result.qasm).
 
