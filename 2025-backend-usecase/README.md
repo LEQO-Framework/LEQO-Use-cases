@@ -115,12 +115,12 @@ However, we can see it via the DevTools of our web browser
 ## 3. Test the Backend via Terminal
 
 The backend can also be accessed directly using Python or curl.
-The sections below use stored a compile_request with the same semantic as the model in the [frontend section](#1-test-the-backend-via-the-frontend) had.
+The sections below uses a stored compile_request with the same semantic as the model in the [frontend section](#2-test-the-backend-via-the-frontend).
 
-> [!NOTE]
-> All command in this section assume that you are in the [./resources/scripts/](./resources/scripts/) directory.
+> [!WARNING]
+> All commands in this section assume that you are in the [./resources/scripts/](./resources/scripts/) directory.
 
-### Send Compile Request with Hardcoded Addition implementation
+### Send Compile Request with Hardcoded _Arithmetic Operator_ Implementation
 
 This variation works without the insert described [here](#optional-insert-implementations-into-the-backend).
 You can use one of the following options:
