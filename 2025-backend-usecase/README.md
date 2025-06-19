@@ -43,10 +43,10 @@ You need to configure the path to the backend in the frontend UI.
 
 ### (Optional) Insert Implementations into the Backend
 
-If you want to load the implementation for the addition later via the database, you need to add it now.
+If you want to load the implementation for the _Arithmetic Operator_ node later via the database, you need to run the commands below.
 
 Navigate to the [./resources/scripts/](./resources/scripts/) directory.
-Now you have to options:
+Now you have two semantically equivalent options:
 
 #### Use Python
 
@@ -60,12 +60,8 @@ python3 ./request_helper.py ./addition_insert.json
 curl -X POST -H "Content-Type: application/json" --data @./addition_insert.json http://localhost:8000/insert
 ```
 
----
-
-Both options have equivalent semantic, just use what is more convenient for you.
-
 > [!TIP]
-> Detailed explanation on the `@leqo.*` annotations used in that implementation can be found in the [backend documentation](https://leqo-framework.github.io/leqo-backend/usage/annotations.html#annotations).
+> Detailed explanation on the `@leqo.*` annotations used in inserted implementation can be found in the [backend documentation](https://leqo-framework.github.io/leqo-backend/usage/annotations.html#annotations).
 
 ## 2. Test the Backend via the Frontend
 
@@ -76,11 +72,11 @@ We will now model this simple algorithm in the frontend:
 ![model in frontend](./resources/graphics/modeled_graph.png)
 
 > [!TIP]
-> You can use the stored [frontend model](./resources/scripts/frontend_model.json) to load the model directly.
+> Shortcut: You can directly load the stored [frontend model](./resources/scripts/frontend_model.json) via **Open** inside the frontend UI.
 
-Here is a small textual description on how to build it:
+Here is a short textual description on how to build it:
 
-1. Drag five _|1⟩_ nodes (under **Circuit-level Nodes**) into the graph
+1. Drag five _|0⟩_ nodes (under **Circuit-level Nodes**) into the graph
 1. Drag two _H_ nodes (under **Circuit-level Nodes**) into the graph
 1. Drag two _Merger_ nodes (under **Circuit-level Nodes**) into the graph
     - Click on the _Merger_ node
@@ -93,7 +89,7 @@ Here is a small textual description on how to build it:
     - Click on the _Measurement_ node
     - Insert into **Indicies**: 2
 1. Connect the nodes as can be seen in the image:
-    - Two qubits _|1⟩_ into the upper merger
+    - Two qubits _|0⟩_ into the upper merger
     - The output of this merger into one Hadamard _H_ gate
     - The output of this gate into the upper entry of the _Arithmetic Operator_
     - One of the lower qubits into the second Hadamard _H_ gate
@@ -206,7 +202,7 @@ let leqo_361ab059e1005696a32d68dfa1946b38_merger_output = leqo_361ab059e1005696a
 /* End node 185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62 */
 ```
 
-Furthermore, the _|1⟩_, _H_ and _Measurement_ nodes are also auto generated.
+Furthermore, the _|0⟩_, _H_ and _Measurement_ nodes are also auto generated.
 
 ### Size Cast
 
