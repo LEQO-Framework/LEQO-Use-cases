@@ -79,15 +79,17 @@ Here is a short textual description on how to build it:
 1. Drag five _|0⟩_ nodes (under **Circuit-level Nodes**) into the graph
 1. Drag two _H_ nodes (under **Circuit-level Nodes**) into the graph
 1. Drag two _Merger_ nodes (under **Circuit-level Nodes**) into the graph
-    - Click on the _Merger_ node
-    - Insert into **Number of Inputs**: 2 for the upper merger, 3 for the lower
+    - Click on the _Merger_ node in the graph
+    - Insert into **Number of Inputs** in the right panel:
+        - 2 for the upper _Merger_
+        - 3 for the lower _Merger_
 1. Drag one _Arithmetic Operator_ node (under **Operators**) into the graph
-    - If you have not inserted the implementation for this node as described [here](<###-(Optional)-Insert-Implementations-into-the-Backend>), you need to insert it
-    - Click on the _Arithmetic Operator_ node
-    - Insert the content of [addition_impl.txt](./resources/scripts/addition_impl.txt) into the **implementation Content** field
+    - If you have not inserted the implementation as described [here](#optional-insert-implementations-into-the-backend), you need to hardcode it here
+    - Click on the _Arithmetic Operator_ node in the graph
+    - Insert the content of [addition_impl.txt](./resources/scripts/addition_impl.txt) into the **implementation Content** field in the right panel
 1. Drag one _Measurement_ node (under **Boundary Nodes**) into the graph
-    - Click on the _Measurement_ node
-    - Insert into **Indicies**: 2
+    - Click on the _Measurement_ node in the graph
+    - Insert into **Indicies** in the right panel: 2
 1. Connect the nodes as can be seen in the image:
     - Two qubits _|0⟩_ into the upper merger
     - The output of this merger into one Hadamard _H_ gate
@@ -119,7 +121,7 @@ The sections below use stored a compile_request with the same semantic as the mo
 
 ### Send Compile Request with Hardcoded Addition implementation
 
-This variation works without the insert described [here](<###-(Optional)-Insert-Implementations-into-the-Backend>).
+This variation works without the insert described [here](#optional-insert-implementations-into-the-backend).
 You can use one of the following options:
 
 #### Use Python
@@ -136,7 +138,7 @@ curl -X POST -H "Content-Type: application/json" --data @./compile_request_with_
 
 ### Send Compile Request with Database Retrieval
 
-This variation uses the implementation from the database, assuming you inserted it [here](<###-(Optional)-Insert-Implementations-into-the-Backend>).
+This variation uses the implementation from the database, assuming you inserted it [here](#optional-insert-implementations-into-the-backend).
 You can use one of the following options:
 
 #### Use Python
