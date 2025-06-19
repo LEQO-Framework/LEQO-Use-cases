@@ -77,26 +77,27 @@ We will now model this simple algorithm in the frontend:
 Here is a short textual description on how to build it:
 
 1. Drag five _|0⟩_ nodes (under **Circuit-level Nodes**) into the graph
-1. Drag two _H_ nodes (under **Circuit-level Nodes**) into the graph
+1. Drag one _H_ nodes (under **Circuit-level Nodes**) into the graph
+1. Drag one _X_ nodes (under **Circuit-level Nodes**) into the graph
 1. Drag two _Merger_ nodes (under **Circuit-level Nodes**) into the graph
     - Click on the _Merger_ node in the graph
     - Insert into **Number of Inputs** in the right panel:
         - 2 for the upper _Merger_
         - 3 for the lower _Merger_
 1. Drag one _Arithmetic Operator_ node (under **Operators**) into the graph
-    - If you have not inserted the implementation as described [here](#optional-insert-implementations-into-the-backend), you need to hardcode it here
-    - Click on the _Arithmetic Operator_ node in the graph
-    - Insert the content of [addition_impl.txt](./resources/scripts/addition_impl.txt) into the **implementation Content** field in the right panel
+    - If you have not yet inserted the implementation as described [here](#optional-insert-implementations-into-the-backend), you need to specify it now:
+        - Click on the _Arithmetic Operator_ node in the graph
+        - Insert the content of [addition_impl.txt](./resources/scripts/addition_impl.txt) into the **implementation Content** field in the right panel
 1. Drag one _Measurement_ node (under **Boundary Nodes**) into the graph
     - Click on the _Measurement_ node in the graph
     - Insert into **Indicies** in the right panel: 2
-1. Connect the nodes as can be seen in the image:
+1. Connect the nodes as can also be seen in the image:
     - Two qubits _|0⟩_ into the upper merger
-    - The output of this merger into one Hadamard _H_ gate
-    - The output of this gate into the upper entry of the _Arithmetic Operator_
-    - One of the lower qubits into the second Hadamard _H_ gate
-    - The Hadamard output and the reaming qubits into the lower merger
-    - The output of the merger into the second entry of the _Arithmetic Operator_
+    - The output of this _Merger_ into the Hadamard _H_ gate
+    - The output of the Hadamard into the **Input 1** of the _Arithmetic Operator_
+    - One of the lower qubits into the XGate _X_ gate
+    - The XGate output and the remaining qubits into the lower _Merger_
+    - The output of this _Merger_ into the **Input 2** of the _Arithmetic Operator_
     - The output of the _Arithmetic Operator_ into the _Measurement_
 
 ### See the Result
@@ -109,12 +110,12 @@ However, we can see it via the DevTools of our web browser
 1. Press on **Send to Backend** in the frontend
 1. You should now see a successful request in the **Network** tab:
    ![result in dev-tools](./resources/graphics/result_in_dev_tools.png)
-1. Clicking on it should open the result in another tab
+1. Clicking on request should open the result in another tab
 
 ## 3. Test the Backend via Terminal
 
-The backend can also be accessed directly using python or curl.
-The sections below use stored a compile_request with the same semantic as the model in the [frontend section](##-1.-Test-the-Backend-via-the-Frontend) had.
+The backend can also be accessed directly using Python or curl.
+The sections below use stored a compile_request with the same semantic as the model in the [frontend section](#1-test-the-backend-via-the-frontend) had.
 
 > [!NOTE]
 > All command in this section assume that you are in the [./resources/scripts/](./resources/scripts/) directory.
