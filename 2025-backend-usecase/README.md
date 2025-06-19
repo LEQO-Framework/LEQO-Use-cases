@@ -168,19 +168,17 @@ The following backend behavior can be observed on by this example:
 
 The backend declares all qubits using one big qubit register at the top of the program.
 
-```
+```qasm
 OPENQASM 3.1;
 include "stdgates.inc";
 qubit[8] leqo_reg;
-...
 ```
 
 ### Renaming
 
 All identifier where prefixed with a hash corresponding to one frontend node.
 
-```
-...
+```qasm
 /* Start node d703bb61-3410-43ce-be51-4750fb7b9f0f */
 let leqo_b8d0652a44085419a43031521aab072e_literal = leqo_reg[{0}];
 @leqo.output 0
@@ -191,15 +189,13 @@ let leqo_b7e9559cda9e59e2ae8e5e0b5a9689b0_literal = leqo_reg[{1}];
 @leqo.output 0
 let leqo_b7e9559cda9e59e2ae8e5e0b5a9689b0_out = leqo_b7e9559cda9e59e2ae8e5e0b5a9689b0_literal;
 /* End node 5b427a52-047a-4cbc-b4f4-6705a2b4b0bb */
-...
 ```
 
 ### Automated Node Generation
 
 The _Merger_ nodes are auto generated matching their input.
 
-```
-...
+```qasm
 /* Start node 185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62 */
 @leqo.input 0
 let leqo_361ab059e1005696a32d68dfa1946b38_merger_input_0 = leqo_reg[{1}];
@@ -208,7 +204,6 @@ let leqo_361ab059e1005696a32d68dfa1946b38_merger_input_1 = leqo_reg[{0}];
 @leqo.output 0
 let leqo_361ab059e1005696a32d68dfa1946b38_merger_output = leqo_361ab059e1005696a32d68dfa1946b38_merger_input_0 ++ leqo_361ab059e1005696a32d68dfa1946b38_merger_input_1;
 /* End node 185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62 */
-...
 ```
 
 Furthermore, the _|1⟩_, _H_ and _Measurement_ nodes are also auto generated.
@@ -217,8 +212,7 @@ Furthermore, the _|1⟩_, _H_ and _Measurement_ nodes are also auto generated.
 
 The inputs into the _Arithmetic Operator_ node are to small for it, the backend casts them up to make them fit.
 
-```
-...
+```qasm
 /* Start node 6ca13c69-36cf-4771-b8c4-0f5804cc7d6e */
 @leqo.input 0
 let leqo_b8f3c6982d375661bb24e30358b24281_q34 = leqo_reg[{1, 0}];
@@ -227,7 +221,6 @@ let leqo_b8f3c6982d375661bb24e30358b24281_q31 = leqo_b8f3c6982d375661bb24e30358b
 @leqo.input 1
 let leqo_b8f3c6982d375661bb24e30358b24281_q32 = leqo_reg[{4, 3, 2}];
 let leqo_b8f3c6982d375661bb24e30358b24281_q33 = leqo_reg[{5, 6}];
-...
 ```
 
 ### Deterministic Output
