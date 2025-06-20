@@ -6,6 +6,7 @@ Simple helper script to insert enrichments into the database.
 import argparse
 import json
 from pathlib import Path
+import sys
 from time import sleep
 from urllib import request
 
@@ -14,6 +15,21 @@ POLL_INTERVAL = 0.1
 MAX_ATTEMPTS = 5
 SIMPLE_ENDPOINTS = ("/insert", "/debug/compile", "/debug/enrich")
 POLLING_ENDPOINTS = ("/compile", "/enrich")
+
+
+def print_response(response) -> None:
+    status = response.status
+    content = response.read().decode("utf-8")
+    if status == SUCCESS_CODE:
+        print(content)
+        sys.exit(0)
+    else:
+        print(f"""\
+Status code: {response.status}
+
+{content}
+              """)
+        sys.exit(1)
 
 
 def simple_send_json(json_path: Path, endpoint: str) -> None:
@@ -27,12 +43,7 @@ def simple_send_json(json_path: Path, endpoint: str) -> None:
             method="POST",
         )
     ) as response:
-        print(f"""\
-Request successful,
-status code: {response.status}
-
-{response.read().decode("utf-8")}
-              """)
+        print_response(response)
 
 
 def polling_send_json(json_path: Path, host: str, endpoint: str) -> None:
@@ -60,21 +71,20 @@ def polling_send_json(json_path: Path, host: str, endpoint: str) -> None:
             assert response.status == SUCCESS_CODE, (
                 f"Status endpoint failed with {response.status} {response.read().encode('utf-8')}"
             )
-            if json.loads(response.read().decode("utf-8"))["status"] == "completed":
+            content = json.loads(response.read().decode("utf-8"))
+            if content["status"] == "completed":
                 done = True
                 break
+            if content["status"] == "failed":
+                print(content["result"])
+                sys.exit(1)
         sleep(POLL_INTERVAL)
     assert done, f"No success after {MAX_ATTEMPTS * POLL_INTERVAL}s"
 
     with request.urlopen(
         request.Request(host + f"/result/{uuid}", method="GET")
     ) as response:
-        print(f"""\
-Request successful,
-status code: {response.status}
-
-{response.read().decode("utf-8")}
-              """)
+        print_response(response)
 
 
 def main() -> None:
