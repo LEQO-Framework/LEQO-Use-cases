@@ -10,6 +10,7 @@
 - [Clone this repository](https://github.com/LEQO-Framework/LEQO-Use-cases)
 - (Optional) [Install Python](https://www.python.org/downloads/)
 - (Optional) [Install curl](https://curl.se/download.html)
+- (Optional) [Install jq](https://jqlang.org/download/)
 
 ## 1. Service Setup
 
