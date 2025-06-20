@@ -9,8 +9,7 @@
 - [Install Docker Compose](https://docs.docker.com/compose/install/)
 - [Clone this repository](https://github.com/LEQO-Framework/LEQO-Use-cases)
 - (Optional) [Install Python](https://www.python.org/downloads/)
-- (Optional) [Install curl](https://curl.se/download.html)
-- (Optional) [Install jq](https://jqlang.org/download/)
+- (Optional) [Install curl](https://curl.se/download.html) and [Install jq](https://jqlang.org/download/)
 
 ## 1. Service Setup
 
@@ -47,7 +46,7 @@ You need to configure the path to the backend in the frontend UI.
 If you want to load the implementation for the _Arithmetic Operator_ node later via the database, you need to run the commands below.
 
 Navigate to the [./resources/scripts/](./resources/scripts/) directory.
-Now you have two semantically equivalent options:
+Now you have three semantically equivalent options:
 
 #### Use Python
 
@@ -55,10 +54,16 @@ Now you have two semantically equivalent options:
 python3 ./request_helper.py ./addition_insert.json
 ```
 
-#### Use curl
+#### Use curl on Linux
 
 ```sh
 curl -H "Content-Type: application/json" --data @./addition_insert.json http://localhost:8000/insert
+```
+
+#### Use Powershell on Windows
+
+```Powershell
+irm -Method Post -Headers @{ "Content-Type" = "application/json" } -Uri http://localhost:8000/insert -InFile ./addition_insert.json
 ```
 
 > [!TIP]
@@ -132,12 +137,26 @@ You can use one of the following options:
 python3 ./request_helper.py compile_request_with_addition.json --endpoint /compile
 ```
 
-#### Use curl and jq
+#### Use curl and jq on Linux
 
 ```sh
 UUID=$(curl -L -H "Content-Type: application/json" --data @./compile_request_with_addition.json http://localhost:8000/compile | jq -r '.uuid') \
 && for i in $(seq 1 10); do if [ "$(curl -s "http://localhost:8000/status/$UUID" | jq -r '.status')" = "completed" ]; then break; else sleep 0.5; fi; done \
 && curl "http://localhost:8000/result/$UUID"
+```
+
+#### Use Powershell on Windows
+
+```Powershell
+&{
+    $pollLocation = (iwr -Method Post -Uri http://localhost:8000/compile -InFile ./compile_request_with_addition.json -Headers @{ "Content-Type" = "application/json" } -MaximumRedirection 0).Headers["Location"]
+    $status = {}
+    do {
+        $status = iwr -Uri $pollLocation | ConvertFrom-Json
+        sleep 0.5
+    } while($status.status -eq "in progress")
+    irm $status.result
+}
 ```
 
 ### Send Compile Request with Database Retrieval
@@ -151,12 +170,26 @@ You can use one of the following options:
 python3 ./request_helper.py compile_request_without_addition.json --endpoint /compile
 ```
 
-#### Use curl and jq
+#### Use curl and jq on Linux
 
 ```sh
 UUID=$(curl -L -H "Content-Type: application/json" --data @./compile_request_without_addition.json http://localhost:8000/compile | jq -r '.uuid') \
 && for i in $(seq 1 10); do if [ "$(curl -s "http://localhost:8000/status/$UUID" | jq -r '.status')" = "completed" ]; then break; else sleep 0.5; fi; done \
 && curl "http://localhost:8000/result/$UUID"
+```
+
+#### Use Powershell on Windows
+
+```Powershell
+&{
+    $pollLocation = (iwr -Method Post -Uri http://localhost:8000/compile -InFile ./compile_request_without_addition.json -Headers @{ "Content-Type" = "application/json" } -MaximumRedirection 0).Headers["Location"]
+    $status = {}
+    do {
+        $status = iwr -Uri $pollLocation | ConvertFrom-Json
+        sleep 0.5
+    } while($status.status -eq "in progress")
+    irm $status.result
+}
 ```
 
 ## 4. Analyse the Result
