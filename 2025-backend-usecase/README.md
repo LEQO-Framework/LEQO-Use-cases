@@ -134,7 +134,7 @@ You can use one of the following options:
 #### Use Python
 
 ```sh
-python3 ./request_helper.py compile_request_with_addition.json --endpoint /compile
+python3 ./request_helper.py compile_request_with_addition.json /compile
 ```
 
 #### Use curl and jq on Linux
@@ -167,7 +167,7 @@ You can use one of the following options:
 #### Use Python
 
 ```sh
-python3 ./request_helper.py compile_request_without_addition.json --endpoint /compile
+python3 ./request_helper.py compile_request_without_addition.json /compile
 ```
 
 #### Use curl and jq on Linux

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple helper script to insert enrichments into the database.
+Simple helper script to communicate with the LEQO backend.
 """
 
 import argparse
@@ -10,26 +10,10 @@ import sys
 from time import sleep
 from urllib import request
 
-SUCCESS_CODE = 200
 POLL_INTERVAL = 0.1
 MAX_ATTEMPTS = 5
 SIMPLE_ENDPOINTS = ("/insert", "/debug/compile", "/debug/enrich")
 POLLING_ENDPOINTS = ("/compile", "/enrich")
-
-
-def print_response(response) -> None:
-    status = response.status
-    content = response.read().decode("utf-8")
-    if status == SUCCESS_CODE:
-        print(content)
-        sys.exit(0)
-    else:
-        print(f"""\
-Status code: {response.status}
-
-{content}
-              """)
-        sys.exit(1)
 
 
 def simple_send_json(json_path: Path, endpoint: str) -> None:
@@ -43,7 +27,7 @@ def simple_send_json(json_path: Path, endpoint: str) -> None:
             method="POST",
         )
     ) as response:
-        print_response(response)
+        print(response.read().decode("utf-8"))
 
 
 def polling_send_json(json_path: Path, host: str, endpoint: str) -> None:
@@ -58,9 +42,6 @@ def polling_send_json(json_path: Path, host: str, endpoint: str) -> None:
             method="POST",
         )
     ) as response:
-        assert response.status == SUCCESS_CODE, (
-            f"First response failed with {response.status} {response.read().encode('utf-8')}"
-        )
         uuid = json.loads(response.read().decode("utf-8"))["uuid"]
 
     done = False
@@ -68,9 +49,6 @@ def polling_send_json(json_path: Path, host: str, endpoint: str) -> None:
         with request.urlopen(
             request.Request(host + f"/status/{uuid}", method="GET")
         ) as response:
-            assert response.status == SUCCESS_CODE, (
-                f"Status endpoint failed with {response.status} {response.read().encode('utf-8')}"
-            )
             content = json.loads(response.read().decode("utf-8"))
             if content["status"] == "completed":
                 done = True
@@ -84,19 +62,17 @@ def polling_send_json(json_path: Path, host: str, endpoint: str) -> None:
     with request.urlopen(
         request.Request(host + f"/result/{uuid}", method="GET")
     ) as response:
-        print_response(response)
+        print(response.read().decode("utf-8"))
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Send JSON via POST to an endpoint.")
     parser.add_argument("json_file", help="Path to the JSON file to send")
+    parser.add_argument("endpoint", help="Endpoint to use for sending")
     parser.add_argument(
         "--host",
         default="http://localhost:8000",
         help="Host URL (default: http://localhost:8000)",
-    )
-    parser.add_argument(
-        "--endpoint", default="/insert", help="Endpoint (default: /insert)"
     )
     args = parser.parse_args()
 
