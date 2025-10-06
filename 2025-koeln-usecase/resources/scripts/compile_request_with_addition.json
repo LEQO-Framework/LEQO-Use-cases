@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "id": "flow-1750353240616",
+    "version": "1.0.0",
+    "name": "My Model",
+    "description": "This is a model.",
+    "author": ""
+  },
+  "nodes": [
+    { "id": "d703bb61-3410-43ce-be51-4750fb7b9f0f", "type": "qubit" },
+    { "id": "5b427a52-047a-4cbc-b4f4-6705a2b4b0bb", "type": "qubit" },
+    { "id": "b5040828-71c1-4ee6-8875-3c1ce2f6981f", "type": "qubit" },
+    { "id": "5f841748-79e3-4a56-be98-b650d8229eec", "type": "qubit" },
+    { "id": "15a581b7-d3bc-466d-a7c3-b48ac55bfe8b", "type": "qubit" },
+    {
+      "id": "9c00c8db-e91f-409a-95ac-d6deab5366e5",
+      "type": "gate",
+      "gate": "x"
+    },
+    {
+      "id": "185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62",
+      "type": "merger",
+      "numberInputs": "2"
+    },
+    {
+      "id": "17e73681-ae4e-4bc0-a85d-e7c92f127fc0",
+      "type": "merger",
+      "numberInputs": "3"
+    },
+    {
+      "id": "c90ea26a-521e-453d-8be5-2ea757ec044a",
+      "type": "gate",
+      "gate": "h"
+    },
+    {
+      "id": "6ca13c69-36cf-4771-b8c4-0f5804cc7d6e",
+      "type": "implementation",
+      "implementation": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\n\n@leqo.input 0\nqubit[3] q31;\n@leqo.input 1\nqubit[3] q32;\nqubit[2] q33;ccx q31[1], q32[1], q32[2];\n\ncx q31[1], q32[1];\nccx q31[0], q32[0], q33[1];\ncx q31[0], q32[0];\nccx q33[0], q32[0], q33[1];\nccx q33[1], q32[1], q32[2];\ncx q33[1], q32[1];\nccx q33[0], q32[0], q33[1];\ncx q31[0], q32[0];\nccx q31[0], q32[0], q33[1];\ncx q33[0], q32[0];\ncx q31[0], q32[0];\n\n@leqo.output 0\nlet out = q32;\n"
+    },
+    {
+      "id": "f901f700-5945-4739-a078-88798fe3bebc",
+      "type": "measure",
+      "indices": [2]
+    }
+  ],
+  "edges": [
+    {
+      "source": ["6ca13c69-36cf-4771-b8c4-0f5804cc7d6e", 0],
+      "target": ["f901f700-5945-4739-a078-88798fe3bebc", 0],
+      "identifier": null,
+      "size": 1
+    },
+    {
+      "source": ["17e73681-ae4e-4bc0-a85d-e7c92f127fc0", 0],
+      "target": ["6ca13c69-36cf-4771-b8c4-0f5804cc7d6e", 1],
+      "identifier": null,
+      "size": 1
+    },
+    {
+      "source": ["c90ea26a-521e-453d-8be5-2ea757ec044a", 0],
+      "target": ["6ca13c69-36cf-4771-b8c4-0f5804cc7d6e", 0],
+      "identifier": null,
+      "size": 1
+    },
+    {
+      "source": ["185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62", 0],
+      "target": ["c90ea26a-521e-453d-8be5-2ea757ec044a", 0],
+      "identifier": null,
+      "size": 1
+    },
+    {
+      "source": ["b5040828-71c1-4ee6-8875-3c1ce2f6981f", 0],
+      "target": ["17e73681-ae4e-4bc0-a85d-e7c92f127fc0", 2]
+    },
+    {
+      "source": ["5f841748-79e3-4a56-be98-b650d8229eec", 0],
+      "target": ["17e73681-ae4e-4bc0-a85d-e7c92f127fc0", 1]
+    },
+    {
+      "source": ["9c00c8db-e91f-409a-95ac-d6deab5366e5", 0],
+      "target": ["17e73681-ae4e-4bc0-a85d-e7c92f127fc0", 0],
+      "identifier": null,
+      "size": 1
+    },
+    {
+      "source": ["d703bb61-3410-43ce-be51-4750fb7b9f0f", 0],
+      "target": ["185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62", 1]
+    },
+    {
+      "source": ["5b427a52-047a-4cbc-b4f4-6705a2b4b0bb", 0],
+      "target": ["185ddc2f-34f7-415a-9e8c-bd0f7cd1ff62", 0]
+    },
+    {
+      "source": ["15a581b7-d3bc-466d-a7c3-b48ac55bfe8b", 0],
+      "target": ["9c00c8db-e91f-409a-95ac-d6deab5366e5", 0]
+    }
+  ]
+}
