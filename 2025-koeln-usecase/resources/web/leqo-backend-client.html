@@ -59,6 +59,11 @@
       white-space: pre;
     }
 
+    input[type="file"] {
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+    }
+
     button {
       display: inline-flex;
       align-items: center;
@@ -100,6 +105,10 @@
       margin-top: 0.3rem;
     }
 
+    .info.error {
+      color: #a61b1b;
+    }
+
     @media (prefers-color-scheme: dark) {
       :root {
         background-color: #111;
@@ -122,6 +131,10 @@
       .info {
         color: #bbb;
       }
+
+      .info.error {
+        color: #ff8a80;
+      }
     }
   </style>
 </head>
@@ -142,6 +155,9 @@
     <p class="info">
       Payload is sent as JSON to <code>/insert</code>. Edit the example before sending if necessary.
     </p>
+    <label for="insertFile">Load payload from file (optional)</label>
+    <input id="insertFile" type="file" accept=".json,.txt,.qasm,.yaml,.yml,application/json" />
+    <p id="insertFileMessage" class="info">Selecting a file will replace the JSON payload below.</p>
     <label for="insertPayload">JSON payload</label>
     <textarea id="insertPayload">{
   "inserts": [
@@ -190,6 +206,59 @@
       element.classList.remove("empty");
     }
 
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes)) {
+        return "";
+      }
+      const threshold = 1024;
+      if (bytes < threshold) {
+        return bytes + " B";
+      }
+      const units = ["KB", "MB", "GB", "TB"];
+      let unitIndex = -1;
+      let value = bytes;
+      do {
+        value /= threshold;
+        unitIndex += 1;
+      } while (value >= threshold && unitIndex < units.length - 1);
+      const decimals = value >= 10 ? 0 : 1;
+      return value.toFixed(decimals) + " " + units[unitIndex];
+    }
+
+    async function loadPayloadFromFile(event) {
+      const input = event.target;
+      const file = input.files && input.files[0];
+      const message = document.getElementById("insertFileMessage");
+      if (message) {
+        message.classList.remove("error");
+      }
+      if (!file) {
+        if (message) {
+          message.textContent = "File selection cleared. Current textarea content stays unchanged.";
+        }
+        return;
+      }
+      try {
+        const text = await file.text();
+        document.getElementById("insertPayload").value = text;
+        if (message) {
+          try {
+            JSON.parse(text);
+            message.textContent = "Loaded " + file.name + " (" + formatBytes(file.size) + ").";
+          } catch {
+            message.textContent = "Loaded " + file.name + ", but the content is not valid JSON. Please verify before sending.";
+            message.classList.add("error");
+          }
+        }
+      } catch (readError) {
+        if (message) {
+          message.textContent = "Could not read file: " + readError.message;
+          message.classList.add("error");
+        }
+        input.value = "";
+      }
+    }
+
     async function postInsert() {
       const output = document.getElementById("insertOutput");
       try {
@@ -236,6 +305,10 @@
       }
     }
 
+    const insertFileInput = document.getElementById("insertFile");
+    if (insertFileInput) {
+      insertFileInput.addEventListener("change", loadPayloadFromFile);
+    }
     document.getElementById("insertButton").addEventListener("click", postInsert);
     document.getElementById("resultButton").addEventListener("click", fetchResult);
   </script>
