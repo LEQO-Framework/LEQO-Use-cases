@@ -1,0 +1,34 @@
+name: leqo-lowcode-stack
+services:
+  leqo-frontend:
+    image: ghcr.io/leqo-framework/low-code-modeler:sha-a9e115e
+    ports:
+      - 127.0.0.1:80:4242
+  leqo-backend:
+    image: ghcr.io/leqo-framework/leqo-backend:0.1.0
+    environment:
+      POSTGRES_USER: leqo
+      POSTGRES_PASSWORD: unsave_passwd
+      POSTGRES_DB: qasm
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
+      SQLALCHEMY_DRIVER: postgresql+psycopg
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "8000:80"
+  postgres:
+    image: postgres:latest
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: leqo
+      POSTGRES_PASSWORD: unsave_passwd
+      POSTGRES_DB: qasm
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  
+volumes:
+  db-data:

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>LEQO Backend Helper</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #f5f5f5;
+      color: #111;
+    }
+
+    body {
+      margin: 0 auto;
+      max-width: 960px;
+      padding: 2rem 1.5rem 4rem;
+      line-height: 1.5;
+      background: inherit;
+      color: inherit;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-block: 1.5rem;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    textarea,
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: "Fira Code", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      border: 1px solid #bbb;
+      padding: 0.6rem;
+      background: rgba(255, 255, 255, 0.9);
+      color: inherit;
+    }
+
+    textarea {
+      min-height: 260px;
+      resize: vertical;
+      white-space: pre;
+    }
+
+    input[type="file"] {
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.2rem;
+      margin-top: 0.8rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      background: #0055a4;
+      transition: background 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background: #003f7d;
+    }
+
+    .output {
+      margin-top: 1rem;
+      background: #1b1b1b;
+      color: #f0f0f0;
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .output.empty {
+      display: none;
+    }
+
+    .info {
+      font-size: 0.9rem;
+      color: #444;
+      margin-top: 0.3rem;
+    }
+
+    .info.error {
+      color: #a61b1b;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        background-color: #111;
+        color: #f7f7f7;
+      }
+
+      section {
+        border-color: #333;
+        background: rgba(20, 20, 20, 0.85);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+
+      textarea,
+      input[type="text"] {
+        border-color: #555;
+        background: rgba(30, 30, 30, 0.9);
+        color: #f7f7f7;
+      }
+
+      .info {
+        color: #bbb;
+      }
+
+      .info.error {
+        color: #ff8a80;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>LEQO Backend Helper</h1>
+  <p class="info">
+    Use this page to call the LEQO backend endpoints exposed by the localhost demo stack. Adjust the host if the backend runs elsewhere.
+  </p>
+
+  <section>
+    <label for="host">Backend host</label>
+    <input id="host" type="text" value="http://localhost:8000" autocomplete="url" />
+    <p class="info">Value must include the protocol, e.g. <code>http://localhost:8000</code>.</p>
+  </section>
+
+  <section>
+    <h2>Insert implementation</h2>
+    <p class="info">
+      Payload is sent as JSON to <code>/insert</code>. Edit the example before sending if necessary.
+    </p>
+    <label for="insertFile">Load payload from file (optional)</label>
+    <input id="insertFile" type="file" accept=".json,.txt,.qasm,.yaml,.yml,application/json" />
+    <p id="insertFileMessage" class="info">Selecting a file will replace the JSON payload below.</p>
+    <label for="insertPayload">JSON payload</label>
+    <textarea id="insertPayload">{
+  "inserts": [
+    {
+      "node": { "id": "some-id", "type": "operator", "operator": "+" },
+      "implementation": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\n@leqo.input 0\nqubit[3] q31;\n@leqo.input 1\nqubit[3] q32;\nqubit[2] q33;ccx q31[1], q32[1], q32[2];\ncx q31[1], q32[1];\nccx q31[0], q32[0], q33[1];\ncx q31[0], q32[0];\nccx q33[0], q32[0], q33[1];\nccx q33[1], q32[1], q32[2];\ncx q33[1], q32[1];\nccx q33[0], q32[0], q33[1];\ncx q31[0], q32[0];\nccx q31[0], q32[0], q33[1];\ncx q33[0], q32[0];\ncx q31[0], q32[0];\n@leqo.output 0\nlet out = q32;",
+      "metadata": {
+        "width": 8,
+        "depth": 10
+      }
+    }
+  ]
+}
+</textarea>
+    <button id="insertButton" type="button">Send to /insert</button>
+    <pre id="insertOutput" class="output empty"></pre>
+  </section>
+
+  <section>
+    <h2>Fetch result</h2>
+    <p class="info">
+      Provide the UUID returned by <code>/compile</code> or <code>/enrich</code> status polling. The client will GET <code>/result/&lt;uuid&gt;</code>.
+    </p>
+    <label for="resultUuid">Result UUID</label>
+    <input id="resultUuid" type="text" placeholder="e.g. 123e4567-e89b-12d3-a456-426614174000" autocomplete="off" />
+    <button id="resultButton" type="button">Fetch /result</button>
+    <pre id="resultOutput" class="output empty"></pre>
+  </section>
+
+  <script>
+    function normaliseHost(raw) {
+      const value = raw.trim();
+      if (!value) {
+        throw new Error("Please provide a backend host (e.g. http://localhost:8000)");
+      }
+      return value.replace(/\/+$/, "");
+    }
+
+    function setOutput(element, text) {
+      if (!text) {
+        element.textContent = "";
+        element.classList.add("empty");
+        return;
+      }
+      element.textContent = text;
+      element.classList.remove("empty");
+    }
+
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes)) {
+        return "";
+      }
+      const threshold = 1024;
+      if (bytes < threshold) {
+        return bytes + " B";
+      }
+      const units = ["KB", "MB", "GB", "TB"];
+      let unitIndex = -1;
+      let value = bytes;
+      do {
+        value /= threshold;
+        unitIndex += 1;
+      } while (value >= threshold && unitIndex < units.length - 1);
+      const decimals = value >= 10 ? 0 : 1;
+      return value.toFixed(decimals) + " " + units[unitIndex];
+    }
+
+    async function loadPayloadFromFile(event) {
+      const input = event.target;
+      const file = input.files && input.files[0];
+      const message = document.getElementById("insertFileMessage");
+      if (message) {
+        message.classList.remove("error");
+      }
+      if (!file) {
+        if (message) {
+          message.textContent = "File selection cleared. Current textarea content stays unchanged.";
+        }
+        return;
+      }
+      try {
+        const text = await file.text();
+        document.getElementById("insertPayload").value = text;
+        if (message) {
+          try {
+            JSON.parse(text);
+            message.textContent = "Loaded " + file.name + " (" + formatBytes(file.size) + ").";
+          } catch {
+            message.textContent = "Loaded " + file.name + ", but the content is not valid JSON. Please verify before sending.";
+            message.classList.add("error");
+          }
+        }
+      } catch (readError) {
+        if (message) {
+          message.textContent = "Could not read file: " + readError.message;
+          message.classList.add("error");
+        }
+        input.value = "";
+      }
+    }
+
+    async function postInsert() {
+      const output = document.getElementById("insertOutput");
+      try {
+        setOutput(output, "Sending request...");
+        const host = normaliseHost(document.getElementById("host").value);
+        const payloadField = document.getElementById("insertPayload");
+        const payload = payloadField.value.trim();
+        if (!payload) {
+          throw new Error("Insert payload is empty");
+        }
+        try {
+          JSON.parse(payload);
+        } catch (parseError) {
+          throw new Error("Insert payload is not valid JSON: " + parseError.message);
+        }
+        const response = await fetch(host + "/insert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload
+        });
+        const bodyText = await response.text();
+        const prefix = ("Status: " + response.status + " " + (response.statusText || "")).trim();
+        setOutput(output, prefix + "\n\n" + bodyText);
+      } catch (error) {
+        setOutput(output, "Error: " + error.message);
+      }
+    }
+
+    async function fetchResult() {
+      const output = document.getElementById("resultOutput");
+      try {
+        setOutput(output, "Fetching result...");
+        const host = normaliseHost(document.getElementById("host").value);
+        const uuid = document.getElementById("resultUuid").value.trim();
+        if (!uuid) {
+          throw new Error("Please provide a UUID returned by the status endpoint");
+        }
+        const response = await fetch(host + "/result/" + encodeURIComponent(uuid));
+        const bodyText = await response.text();
+        const prefix = ("Status: " + response.status + " " + (response.statusText || "")).trim();
+        setOutput(output, prefix + "\n\n" + bodyText);
+      } catch (error) {
+        setOutput(output, "Error: " + error.message);
+      }
+    }
+
+    const insertFileInput = document.getElementById("insertFile");
+    if (insertFileInput) {
+      insertFileInput.addEventListener("change", loadPayloadFromFile);
+    }
+    document.getElementById("insertButton").addEventListener("click", postInsert);
+    document.getElementById("resultButton").addEventListener("click", fetchResult);
+  </script>
+</body>
+</html>
