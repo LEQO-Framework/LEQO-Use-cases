@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "name": "Uniform state (4 qubits)",
+    "description": "Prepare a four-qubit uniform superposition and measure all qubits.",
+    "author": "paper-use-case"
+  },
+  "nodes": [
+    {
+      "id": "prepare",
+      "type": "prepare",
+      "label": "Uniform",
+      "quantumState": "uniform",
+      "size": 4
+    },
+    {
+      "id": "measure",
+      "type": "measure",
+      "label": "Readout",
+      "indices": [0, 1, 2, 3]
+    }
+  ],
+  "edges": [
+    {
+      "source": ["prepare", 0],
+      "target": ["measure", 0]
+    }
+  ]
+}
