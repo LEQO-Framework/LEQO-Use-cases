@@ -1,0 +1,37 @@
+name: leqo-paper-results
+services:
+  postgres:
+    image: postgres:17.2
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: leqo
+      POSTGRES_PASSWORD: leqo
+      POSTGRES_DB: qasm
+    ports:
+      - "5435:5432"
+    volumes:
+      - paper-db-data:/var/lib/postgresql/data
+
+  leqo-backend:
+    image: ghcr.io/leqo-framework/leqo-backend:main
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_USER: leqo
+      POSTGRES_PASSWORD: leqo
+      POSTGRES_DB: qasm
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: postgres
+      SQLALCHEMY_DRIVER: postgresql+psycopg
+      API_BASE_URL: http://localhost:8000/
+      CORS_ALLOW_ORIGINS: '["*"]'
+      CORS_ALLOW_CREDENTIALS: "true"
+      CORS_ALLOW_METHODS: '["*"]'
+      CORS_ALLOW_HEADERS: '["*"]'
+      QISKIT_COMPAT_MODE: "true"
+    ports:
+      - "8000:80"
+
+volumes:
+  paper-db-data:

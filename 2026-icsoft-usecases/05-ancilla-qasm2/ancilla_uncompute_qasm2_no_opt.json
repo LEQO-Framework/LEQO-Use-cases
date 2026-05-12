@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "name": "Ancilla Reuse + Uncompute (OpenQASM2, non-optimized)",
+    "description": "Same OpenQASM 2 model as ancilla_uncompute_qasm2_opt.json but without optimizeWidth, used for A/B comparison on a 3-qubit logical data path.",
+    "author": "paper-use-case"
+  },
+  "nodes": [
+    {
+      "id": "producer",
+      "type": "implementation",
+      "label": "QASM2 producer with uncompute-capable ancilla",
+      "implementation": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\nqreg data[3];\nh data[0];\ncx data[0], data[1];\ncx data[1], data[2];\nqreg anc[2];\ncx data[0], anc[0];\ncx anc[0], anc[1];\n// @leqo.output 0\n// let out = data;\n\n// @leqo.uncompute start\ncx anc[0], anc[1];\ncx data[0], anc[0];\n// @leqo.reusable\n// let anc_clean = anc;\n// @leqo.uncompute end\n"
+    },
+    {
+      "id": "consumer",
+      "type": "implementation",
+      "label": "QASM2 consumer",
+      "implementation": "OPENQASM 2.0;\ninclude \"qelib1.inc\";\n// @leqo.input 0\nqreg in_data[3];\nqreg work[2];\ncx in_data[0], work[0];\ncx work[0], in_data[1];\ncx in_data[1], work[1];\ncx work[1], in_data[2];\n// @leqo.output 0\n// let out = in_data;\n"
+    }
+  ],
+  "edges": [
+    { "source": ["producer", 0], "target": ["consumer", 0] }
+  ]
+}

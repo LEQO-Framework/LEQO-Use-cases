@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "name": "QAOA MaxCut triangle (p=1)",
+    "description": "One-layer QAOA ansatz for MaxCut on a 3-node ring.",
+    "author": "paper-use-case"
+  },
+  "parameters": {
+    "gamma": 0.8,
+    "beta": 0.7,
+    "gamma_2": 1.6,
+    "beta_2": 1.4
+  },
+  "nodes": [
+    { "id": "q0", "type": "qubit" },
+    { "id": "q1", "type": "qubit" },
+    { "id": "q2", "type": "qubit" },
+
+    { "id": "h0", "type": "gate", "gate": "h" },
+    { "id": "h1", "type": "gate", "gate": "h" },
+    { "id": "h2", "type": "gate", "gate": "h" },
+
+    { "id": "cx01_a", "type": "gate", "gate": "cnot" },
+    { "id": "rz01", "type": "gate-with-param", "gate": "rz", "parameter": "$gamma_2" },
+    { "id": "cx01_b", "type": "gate", "gate": "cnot" },
+
+    { "id": "cx12_a", "type": "gate", "gate": "cnot" },
+    { "id": "rz12", "type": "gate-with-param", "gate": "rz", "parameter": "$gamma_2" },
+    { "id": "cx12_b", "type": "gate", "gate": "cnot" },
+
+    { "id": "cx02_a", "type": "gate", "gate": "cnot" },
+    { "id": "rz02", "type": "gate-with-param", "gate": "rz", "parameter": "$gamma_2" },
+    { "id": "cx02_b", "type": "gate", "gate": "cnot" },
+
+    { "id": "rx0", "type": "gate-with-param", "gate": "rx", "parameter": "$beta_2" },
+    { "id": "rx1", "type": "gate-with-param", "gate": "rx", "parameter": "$beta_2" },
+    { "id": "rx2", "type": "gate-with-param", "gate": "rx", "parameter": "$beta_2" },
+
+    { "id": "merge_out", "type": "merger", "numberInputs": 3 },
+    { "id": "measure", "type": "measure", "indices": [0, 1, 2] }
+  ],
+  "edges": [
+    { "source": ["q0", 0], "target": ["h0", 0] },
+    { "source": ["q1", 0], "target": ["h1", 0] },
+    { "source": ["q2", 0], "target": ["h2", 0] },
+
+    { "source": ["h0", 0], "target": ["cx01_a", 0] },
+    { "source": ["h1", 0], "target": ["cx01_a", 1] },
+    { "source": ["cx01_a", 1], "target": ["rz01", 0] },
+    { "source": ["cx01_a", 0], "target": ["cx01_b", 0] },
+    { "source": ["rz01", 0], "target": ["cx01_b", 1] },
+
+    { "source": ["cx01_b", 1], "target": ["cx12_a", 0] },
+    { "source": ["h2", 0], "target": ["cx12_a", 1] },
+    { "source": ["cx12_a", 1], "target": ["rz12", 0] },
+    { "source": ["cx12_a", 0], "target": ["cx12_b", 0] },
+    { "source": ["rz12", 0], "target": ["cx12_b", 1] },
+
+    { "source": ["cx01_b", 0], "target": ["cx02_a", 0] },
+    { "source": ["cx12_b", 1], "target": ["cx02_a", 1] },
+    { "source": ["cx02_a", 1], "target": ["rz02", 0] },
+    { "source": ["cx02_a", 0], "target": ["cx02_b", 0] },
+    { "source": ["rz02", 0], "target": ["cx02_b", 1] },
+
+    { "source": ["cx02_b", 0], "target": ["rx0", 0] },
+    { "source": ["cx12_b", 0], "target": ["rx1", 0] },
+    { "source": ["cx02_b", 1], "target": ["rx2", 0] },
+
+    { "source": ["rx0", 0], "target": ["merge_out", 0] },
+    { "source": ["rx1", 0], "target": ["merge_out", 1] },
+    { "source": ["rx2", 0], "target": ["merge_out", 2] },
+
+    { "source": ["merge_out", 0], "target": ["measure", 0] }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "name": "Basis addition (pre-enriched implementations)",
+    "description": "Adds two basis-encoded 2-bit integers (1 + 3) using pre-enriched implementation nodes and measures the 3-bit sum register.",
+    "author": "paper-results"
+  },
+  "nodes": [
+    {
+      "id": "encode_a",
+      "label": "Encode 1",
+      "type": "implementation",
+      "implementation": "OPENQASM 3.1;\ninclude \"stdgates.inc\";\nqubit[2] encoded;\n// Basis value 1 (little-endian: 01)\nx encoded[0];\n@leqo.output 0\nlet out = encoded;\n"
+    },
+    {
+      "id": "encode_b",
+      "label": "Encode 3",
+      "type": "implementation",
+      "implementation": "OPENQASM 3.1;\ninclude \"stdgates.inc\";\nqubit[2] encoded;\n// Basis value 3 (little-endian: 11)\nx encoded[0];\nx encoded[1];\n@leqo.output 0\nlet out = encoded;\n"
+    },
+    {
+      "id": "adder",
+      "label": "Binary adder",
+      "type": "implementation",
+      "implementation": "OPENQASM 3.1;\ninclude \"stdgates.inc\";\n@leqo.input 0\nqubit[2] addend0;\n@leqo.input 1\nqubit[2] addend1;\nqubit[3] sum;\nqubit[1] carry;\nccx addend0[0], addend1[0], carry[0];\ncx addend0[0], sum[0];\ncx addend1[0], sum[0];\nccx addend0[1], addend1[1], sum[2];\nccx carry[0], addend0[1], sum[2];\nccx carry[0], addend1[1], sum[2];\ncx addend0[1], sum[1];\ncx addend1[1], sum[1];\ncx carry[0], sum[1];\n@leqo.output 0\nlet out = sum;\n"
+    },
+    {
+      "id": "measure",
+      "label": "Readout",
+      "type": "implementation",
+      "implementation": "OPENQASM 3.1;\n@leqo.input 0\nqubit[3] q;\nbit[3] result = measure q[{0, 1, 2}];\n@leqo.output 0\nlet out = result;\n@leqo.output 1\nlet qubit_out = q;\n"
+    }
+  ],
+  "edges": [
+    { "source": ["encode_a", 0], "target": ["adder", 0] },
+    { "source": ["encode_b", 0], "target": ["adder", 1] },
+    { "source": ["adder", 0], "target": ["measure", 0] }
+  ]
+}
