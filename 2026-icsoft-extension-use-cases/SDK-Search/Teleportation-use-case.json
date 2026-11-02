@@ -5,8 +5,8 @@
     "description": "This is a model.",
     "author": "",
     "containsPlaceholder": false,
-    "id": "flow-1793593967439",
-    "timestamp": "2026-11-02T04:32:47.439Z"
+    "id": "flow-1793595063300",
+    "timestamp": "2026-11-02T04:51:03.300Z"
   },
   "nodes": [
     {
@@ -342,7 +342,7 @@
         "x": 4320,
         "y": 555
       },
-      "selected": true,
+      "selected": false,
       "selectable": true,
       "draggable": true,
       "data": {
@@ -645,7 +645,8 @@
           "quantum register"
         ],
         "outputTypes": [],
-        "parameter": "0"
+        "parameter": "2.0943951023931953",
+        "parameterType": "radian"
       },
       "width": 110,
       "height": 110,
@@ -849,7 +850,7 @@
         "x": 4065,
         "y": 690
       },
-      "selected": false,
+      "selected": true,
       "selectable": true,
       "draggable": true,
       "data": {
@@ -889,7 +890,8 @@
           "any"
         ],
         "outputTypes": [],
-        "parameter": "0"
+        "parameter": "-2.0943951023931953",
+        "parameterType": "degree"
       },
       "width": 110,
       "height": 110,
@@ -1158,8 +1160,8 @@
     }
   ],
   "viewport": {
-    "x": 200.24739365823643,
-    "y": 254.44225324512058,
+    "x": -942.7526063417636,
+    "y": 130.44225324512058,
     "zoom": 0.5
   }
 }
